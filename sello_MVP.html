@@ -1,0 +1,1477 @@
+<title>Sello</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@700;800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+
+<style>
+/* ================================================================
+   SELLO — Mahalliy bozor platformasi
+   Palette: slate-tinted navy bg · vivid indigo accent · warm neutrals
+   Layout: mobile shell, sticky nav, bottom tab, modal sheets
+   ================================================================ */
+
+:root {
+  --bg:          #F6F7FB;
+  --bg-card:     #FFFFFF;
+  --bg-input:    #EEF0F6;
+  --bg-subtle:   #F0F2F8;
+  --fg:          #12131A;
+  --fg-2:        #4A4E6A;
+  --fg-3:        #9196B0;
+  --border:      #E2E5F0;
+  --accent:      #4F46E5;
+  --accent-2:    #6366F1;
+  --accent-bg:   #EEF2FF;
+  --accent-fg:   #3730A3;
+  --success:     #059669;
+  --success-bg:  #D1FAE5;
+  --warn:        #D97706;
+  --warn-bg:     #FEF3C7;
+  --danger:      #DC2626;
+  --danger-bg:   #FEE2E2;
+  --shadow-sm:   0 1px 2px rgba(18,19,26,.06), 0 1px 4px rgba(18,19,26,.04);
+  --shadow:      0 2px 8px rgba(18,19,26,.08), 0 1px 3px rgba(18,19,26,.05);
+  --shadow-lg:   0 12px 32px rgba(18,19,26,.14), 0 4px 12px rgba(18,19,26,.07);
+  --radius:      14px;
+  --radius-sm:   10px;
+  --radius-pill: 999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #0D0E14;
+    --bg-card:     #161720;
+    --bg-input:    #1E2030;
+    --bg-subtle:   #1A1C28;
+    --fg:          #E8EAF6;
+    --fg-2:        #9196B8;
+    --fg-3:        #5A5F80;
+    --border:      #252840;
+    --accent:      #6366F1;
+    --accent-2:    #818CF8;
+    --accent-bg:   #1E1F3A;
+    --accent-fg:   #A5B4FC;
+    --success:     #10B981;
+    --success-bg:  #052E16;
+    --warn:        #F59E0B;
+    --warn-bg:     #1C1500;
+    --danger:      #EF4444;
+    --danger-bg:   #2D0A0A;
+    --shadow-sm:   0 1px 2px rgba(0,0,0,.3);
+    --shadow:      0 2px 8px rgba(0,0,0,.4);
+    --shadow-lg:   0 12px 32px rgba(0,0,0,.6);
+    color-scheme:  dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:          #0D0E14;
+  --bg-card:     #161720;
+  --bg-input:    #1E2030;
+  --bg-subtle:   #1A1C28;
+  --fg:          #E8EAF6;
+  --fg-2:        #9196B8;
+  --fg-3:        #5A5F80;
+  --border:      #252840;
+  --accent:      #6366F1;
+  --accent-2:    #818CF8;
+  --accent-bg:   #1E1F3A;
+  --accent-fg:   #A5B4FC;
+  --success:     #10B981;
+  --success-bg:  #052E16;
+  --warn:        #F59E0B;
+  --warn-bg:     #1C1500;
+  --danger:      #EF4444;
+  --danger-bg:   #2D0A0A;
+  --shadow-sm:   0 1px 2px rgba(0,0,0,.3);
+  --shadow:      0 2px 8px rgba(0,0,0,.4);
+  --shadow-lg:   0 12px 32px rgba(0,0,0,.6);
+  color-scheme:  dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.5; color: var(--fg); background: var(--bg); -webkit-font-smoothing: antialiased; }
+
+body {
+  padding-left:  max(0px, env(safe-area-inset-left,  0px));
+  padding-right: max(0px, env(safe-area-inset-right, 0px));
+  overflow-x: hidden;
+}
+
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--bg-card); z-index: 100;
+}
+
+img { max-width: 100%; display: block; }
+button { font-family: inherit; }
+
+/* ---- NAV ---- */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 90;
+  background: var(--bg-card); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.nav-logo {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800; font-size: 22px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; letter-spacing: -.5px; flex-shrink: 0;
+}
+
+.nav-search {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  background: var(--bg-input); border: 1.5px solid transparent;
+  border-radius: var(--radius-sm); padding: 8px 12px;
+  transition: border-color .15s; min-width: 0;
+}
+.nav-search:focus-within { border-color: var(--accent); }
+.nav-search input { flex: 1; background: none; border: none; outline: none; font-size: 14px; color: var(--fg); min-width: 0; }
+.nav-search input::placeholder { color: var(--fg-3); }
+.nav-search svg { color: var(--fg-3); flex-shrink: 0; }
+
+.nav-btn {
+  width: 38px; height: 38px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border); background: var(--bg-card);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--fg-2); transition: all .15s; flex-shrink: 0;
+}
+.nav-btn:hover { background: var(--bg-input); color: var(--fg); }
+
+.nav-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff; font-weight: 700; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; border: none; overflow: hidden;
+}
+.nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---- CATEGORIES BAR ---- */
+.cats-bar {
+  display: flex; gap: 8px; overflow-x: auto; padding: 10px max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  scrollbar-width: none; border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+}
+.cats-bar::-webkit-scrollbar { display: none; }
+
+.cat-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border); background: var(--bg-card);
+  color: var(--fg-2); font-size: 13px; font-weight: 500;
+  white-space: nowrap; cursor: pointer; transition: all .15s; flex-shrink: 0;
+}
+.cat-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.cat-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ---- PAGES ---- */
+#app { display: flex; flex-direction: column; min-height: 100%; }
+.page { display: none; flex-direction: column; flex: 1; overflow-y: auto; }
+.page.active { display: flex; }
+
+/* ---- MAIN ---- */
+.main {
+  flex: 1; padding: 16px max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-bottom: 90px;
+}
+
+/* ---- SECTION HEADER ---- */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; margin-top: 20px; }
+.section-header:first-child { margin-top: 4px; }
+.section-title { font-weight: 700; font-size: 16px; }
+.section-link { font-size: 13px; color: var(--accent); cursor: pointer; font-weight: 500; }
+
+/* ---- ADS GRID ---- */
+.ads-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 580px)  { .ads-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 860px)  { .ads-grid { grid-template-columns: repeat(4, 1fr); } }
+
+/* ---- AD CARD ---- */
+.ad-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; cursor: pointer;
+  transition: transform .15s, box-shadow .15s; display: flex; flex-direction: column;
+}
+.ad-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+.ad-img {
+  aspect-ratio: 1; background: var(--bg-subtle);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; position: relative; overflow: hidden;
+}
+.ad-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+
+.ad-badge {
+  position: absolute; top: 8px; left: 8px;
+  background: var(--warn); color: #fff;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: var(--radius-pill); letter-spacing: .4px;
+  box-shadow: var(--shadow-sm);
+}
+
+.ad-body { padding: 10px 11px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.ad-title { font-size: 13px; font-weight: 600; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ad-price { font-size: 15px; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; letter-spacing: -.3px; }
+.ad-meta { font-size: 11px; color: var(--fg-3); display: flex; gap: 5px; align-items: center; margin-top: 2px; }
+
+/* ---- BOTTOM NAV ---- */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  padding-left:  max(0px, env(safe-area-inset-left,  0px));
+  padding-right: max(0px, env(safe-area-inset-right, 0px));
+  background: var(--bg-card); border-top: 1px solid var(--border);
+  display: flex; z-index: 90;
+}
+
+.bnav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 4px; cursor: pointer; color: var(--fg-3);
+  font-size: 10px; font-weight: 500; border: none; background: none;
+  transition: color .15s; position: relative;
+}
+.bnav-item.active { color: var(--accent); }
+.bnav-item svg { width: 22px; height: 22px; }
+
+.bnav-post {
+  background: none;
+  color: var(--fg-3);
+}
+.bnav-post.active { color: var(--accent); }
+.bnav-post svg { width: 22px; height: 22px; }
+
+/* ---- MODALS ---- */
+.overlay {
+  position: fixed; inset: 0; background: rgba(10,10,20,.55);
+  z-index: 200; display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .2s; backdrop-filter: blur(2px);
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--bg-card); border-radius: 22px 22px 0 0;
+  width: 100%; max-width: 560px; max-height: 94vh; overflow-y: auto;
+  padding: 0 max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-bottom: max(28px, env(safe-area-inset-bottom, 0px));
+  transform: translateY(32px); transition: transform .28s cubic-bezier(.32,1,.23,1);
+}
+.overlay.open .modal { transform: translateY(0); }
+
+.modal-handle {
+  width: 36px; height: 4px; background: var(--border);
+  border-radius: 2px; margin: 14px auto 20px;
+}
+.modal-title { font-size: 19px; font-weight: 800; margin-bottom: 20px; text-wrap: balance; letter-spacing: -.3px; }
+
+/* ---- FORMS ---- */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field + .field { margin-top: 14px; }
+.field label { font-size: 13px; font-weight: 600; color: var(--fg-2); }
+
+.input {
+  background: var(--bg-input); border: 1.5px solid transparent;
+  border-radius: var(--radius-sm); padding: 11px 14px;
+  font-size: 15px; color: var(--fg); font-family: inherit; outline: none;
+  transition: border-color .15s, background .15s; width: 100%;
+}
+.input:focus { border-color: var(--accent); background: var(--bg-card); }
+.input::placeholder { color: var(--fg-3); }
+textarea.input { resize: vertical; min-height: 90px; }
+select.input { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239196B0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+/* ---- BUTTONS ---- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 20px; border-radius: var(--radius-sm); font-size: 15px;
+  font-weight: 600; font-family: inherit; cursor: pointer; border: none;
+  transition: opacity .15s, transform .1s, box-shadow .15s; white-space: nowrap;
+}
+.btn:active { transform: scale(.97); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff; box-shadow: 0 4px 14px rgba(79,70,229,.35);
+}
+.btn-primary:hover { opacity: .92; }
+
+.btn-outline {
+  background: transparent; border: 1.5px solid var(--border); color: var(--fg);
+}
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+
+.btn-danger { background: var(--danger); color: #fff; }
+
+.btn-full { width: 100%; }
+
+.btn-google {
+  background: var(--bg-card); border: 1.5px solid var(--border); color: var(--fg);
+  width: 100%; padding: 13px; justify-content: center; gap: 10px;
+  font-size: 15px;
+}
+.btn-google:hover { border-color: var(--accent); background: var(--accent-bg); }
+
+/* ---- AUTH ---- */
+.auth-or { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--fg-3); font-size: 13px; }
+.auth-or::before, .auth-or::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+.auth-tabs { display: flex; background: var(--bg-input); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 24px; gap: 3px; }
+.auth-tab {
+  flex: 1; padding: 9px; font-size: 14px; font-weight: 600;
+  cursor: pointer; background: none; border: none; color: var(--fg-3);
+  border-radius: 8px; transition: all .15s;
+}
+.auth-tab.active { background: var(--bg-card); color: var(--fg); box-shadow: var(--shadow-sm); }
+
+/* ---- PROFILE ---- */
+.profile-hero { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 28px 0 20px; text-align: center; }
+.profile-avatar {
+  width: 84px; height: 84px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff; font-size: 30px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; overflow: hidden; box-shadow: 0 4px 16px rgba(79,70,229,.35);
+}
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.profile-email { font-size: 13px; color: var(--fg-3); }
+
+/* ---- MENU LIST ---- */
+.menu-section-label { font-size: 11px; font-weight: 700; color: var(--fg-3); letter-spacing: .8px; text-transform: uppercase; padding: 16px 0 6px; }
+.menu-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+
+.menu-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; cursor: pointer; transition: background .12s;
+  border: none; background: none; width: 100%; color: var(--fg);
+  font-size: 15px; font-family: inherit; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.menu-item:last-child { border-bottom: none; }
+.menu-item:hover { background: var(--bg-subtle); }
+
+.menu-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--accent); background: var(--accent-bg);
+}
+.menu-icon svg { width: 18px; height: 18px; }
+.menu-label { flex: 1; font-weight: 500; }
+.menu-badge { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: var(--radius-pill); background: var(--accent-bg); color: var(--accent); }
+.menu-arrow { color: var(--fg-3); font-size: 18px; }
+
+/* ---- SETTINGS ---- */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label span { font-size: 15px; font-weight: 500; display: block; }
+.toggle-label small { font-size: 12px; color: var(--fg-3); display: block; margin-top: 1px; }
+
+.toggle {
+  position: relative; width: 50px; height: 28px;
+  background: var(--border); border-radius: 14px;
+  cursor: pointer; transition: background .2s; flex-shrink: 0; border: none;
+}
+.toggle.on { background: var(--accent); }
+.toggle::after {
+  content: ""; position: absolute; top: 3px; left: 3px;
+  width: 22px; height: 22px; background: #fff; border-radius: 50%;
+  transition: transform .2s; box-shadow: var(--shadow-sm);
+}
+.toggle.on::after { transform: translateX(22px); }
+
+.seg-ctrl { display: flex; background: var(--bg-input); border-radius: var(--radius-sm); padding: 3px; gap: 2px; }
+.seg-btn {
+  flex: 1; padding: 7px 4px; font-size: 12px; font-weight: 600;
+  cursor: pointer; background: none; border: none; color: var(--fg-3);
+  border-radius: 7px; transition: all .15s; font-family: inherit;
+}
+.seg-btn.active { background: var(--bg-card); color: var(--fg); box-shadow: var(--shadow-sm); }
+
+.lang-opt { display: flex; align-items: center; gap: 12px; padding: 13px 0; cursor: pointer; border-bottom: 1px solid var(--border); }
+.lang-opt:last-child { border-bottom: none; }
+.lang-opt .lang-name { flex: 1; font-size: 15px; font-weight: 500; }
+.lang-opt .check { color: var(--accent); font-size: 16px; }
+
+/* ---- ADMIN ---- */
+.admin-hero {
+  background: linear-gradient(135deg, var(--accent) 0%, #7C3AED 100%);
+  padding: 24px max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  color: #fff;
+}
+.admin-hero h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -.3px; }
+.admin-hero p { font-size: 13px; opacity: .75; margin-top: 2px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 16px max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.stat-tile { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.stat-num { font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--accent); letter-spacing: -.5px; line-height: 1; }
+.stat-lbl { font-size: 12px; color: var(--fg-3); font-weight: 500; margin-top: 4px; }
+
+.admin-tabs { display: flex; overflow-x: auto; scrollbar-width: none; border-bottom: 2px solid var(--border); padding: 0 max(16px, env(safe-area-inset-left, 0px)); gap: 20px; }
+.admin-tabs::-webkit-scrollbar { display: none; }
+.admin-tab { padding: 12px 0; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; border: none; background: none; color: var(--fg-3); font-family: inherit; border-bottom: 2.5px solid transparent; margin-bottom: -2px; transition: all .15s; }
+.admin-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.admin-content { padding: 16px max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: 90px; }
+
+/* ---- TABLE ---- */
+.table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+.table { width: 100%; border-collapse: collapse; min-width: 480px; }
+.table th { padding: 11px 16px; font-size: 11px; font-weight: 700; color: var(--fg-3); text-align: left; background: var(--bg-subtle); letter-spacing: .5px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+.table td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: var(--bg-subtle); }
+
+.badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 700; }
+.badge-green { background: var(--success-bg); color: var(--success); }
+.badge-warn  { background: var(--warn-bg);    color: var(--warn); }
+.badge-red   { background: var(--danger-bg);  color: var(--danger); }
+
+.tbl-btn { padding: 5px 11px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: none; color: var(--fg-2); font-family: inherit; transition: all .12s; margin-right: 4px; }
+.tbl-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tbl-btn.del:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ---- AD DETAIL ---- */
+.ad-detail-img { aspect-ratio: 4/3; background: var(--bg-subtle); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 56px; overflow: hidden; margin-bottom: 18px; }
+.ad-detail-title { font-size: 20px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 6px; text-wrap: balance; }
+.ad-detail-price { font-size: 28px; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; letter-spacing: -.5px; margin-bottom: 14px; }
+.ad-info-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.info-chip { display: flex; align-items: center; gap: 5px; background: var(--bg-subtle); border-radius: 8px; padding: 6px 12px; font-size: 13px; color: var(--fg-2); font-weight: 500; }
+.ad-desc { font-size: 15px; line-height: 1.65; color: var(--fg-2); margin-bottom: 20px; }
+
+.seller-card { display: flex; align-items: center; gap: 12px; background: var(--bg-subtle); border-radius: var(--radius); padding: 14px; margin-bottom: 18px; }
+.seller-av { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font-weight: 700; font-size: 17px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.seller-name { font-weight: 700; font-size: 15px; }
+.seller-meta { font-size: 13px; color: var(--fg-3); margin-top: 1px; }
+
+/* ---- UPLOAD ---- */
+.upload-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 32px 16px; text-align: center; cursor: pointer; transition: all .15s; color: var(--fg-3); font-size: 14px; font-weight: 500; }
+.upload-zone:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.upload-zone svg { margin: 0 auto 10px; }
+
+/* ---- STEP ---- */
+.step-bar { display: flex; gap: 6px; margin-bottom: 24px; }
+.step-seg { flex: 1; height: 3px; border-radius: 2px; background: var(--border); transition: background .25s; }
+.step-seg.done { background: var(--accent); }
+
+/* ---- AD FORM PREVIEW ---- */
+.ad-preview-box { background: var(--bg-subtle); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; }
+
+/* ---- MY ADS ROW ---- */
+.my-ad-row { display: flex; gap: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; cursor: pointer; transition: background .12s; margin-bottom: 10px; }
+.my-ad-row:hover { background: var(--bg-subtle); }
+.my-ad-thumb { width: 72px; height: 72px; border-radius: 10px; background: var(--bg-subtle); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; overflow: hidden; }
+.my-ad-info { flex: 1; min-width: 0; }
+.my-ad-title { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.my-ad-price { font-size: 15px; font-weight: 800; color: var(--accent); margin: 2px 0; font-variant-numeric: tabular-nums; }
+
+/* ---- CHAT ---- */
+.chat-wrap { display: flex; flex-direction: column; height: 380px; }
+.chat-msgs { flex: 1; overflow-y: auto; padding: 4px 0 12px; display: flex; flex-direction: column; gap: 10px; }
+.chat-msg { max-width: 80%; }
+.chat-msg.me { align-self: flex-end; }
+.chat-bubble { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.45; }
+.chat-msg.me .chat-bubble { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border-bottom-right-radius: 4px; }
+.chat-msg.them .chat-bubble { background: var(--bg-input); border-bottom-left-radius: 4px; }
+.chat-time { font-size: 11px; color: var(--fg-3); margin-top: 3px; padding: 0 4px; }
+.chat-msg.me .chat-time { text-align: right; }
+.chat-input-row { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+.chat-input-row .input { flex: 1; }
+
+/* ---- TOAST ---- */
+.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(16px); background: var(--fg); color: var(--bg); padding: 10px 22px; border-radius: var(--radius-pill); font-size: 14px; font-weight: 600; z-index: 999; opacity: 0; transition: all .22s; white-space: nowrap; pointer-events: none; box-shadow: var(--shadow-lg); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---- ABOUT ---- */
+.about-logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 42px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+/* ---- LOADING SPINNER ---- */
+.spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin: 40px auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---- EMPTY STATE ---- */
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 16px; text-align: center; }
+.empty-state svg { color: var(--fg-3); opacity: .5; }
+.empty-state h3 { font-size: 16px; font-weight: 700; }
+.empty-state p { font-size: 14px; color: var(--fg-3); }
+
+/* misc */
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.flex-row { display: flex; gap: 10px; }
+.text-sm { font-size: 13px; color: var(--fg-3); }
+.color-danger { color: var(--danger) !important; }
+.color-danger .menu-icon { background: var(--danger-bg); color: var(--danger); }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+
+<div id="app">
+  <nav class="nav">
+    <div class="nav-logo">Sello</div>
+    <div class="nav-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="E'lon qidirish..." oninput="filterAds()">
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="nav-btn" onclick="openModal('notifModal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <button class="nav-avatar" id="navAvatar" onclick="goProfile()">?</button>
+    </div>
+  </nav>
+
+  <div class="cats-bar" id="catsBar"></div>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <div class="main">
+      <div class="section-header">
+        <span class="section-title">Yangi e'lonlar</span>
+        <span class="section-link" onclick="filterCat('Barchasi')">Barchasi</span>
+      </div>
+      <div class="ads-grid" id="adsGrid"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- FAVORITES -->
+  <div id="page-favorites" class="page">
+    <div class="main">
+      <div class="section-header"><span class="section-title">Saqlangan</span></div>
+      <div id="favsList"></div>
+    </div>
+  </div>
+
+  <!-- POST AD -->
+  <div id="page-post" class="page">
+    <div class="main">
+      <div class="section-header"><span class="section-title">E'lon berish</span></div>
+      <div class="step-bar">
+        <div class="step-seg done" id="s1"></div>
+        <div class="step-seg" id="s2"></div>
+        <div class="step-seg" id="s3"></div>
+      </div>
+
+      <div id="adStep1">
+        <div class="field"><label>Kategoriya</label>
+          <select class="input" id="adCat">
+            <option value="">Tanlang...</option>
+            <option>Elektronika</option><option>Kiyim-kechak</option>
+            <option>Uy jihozlari</option><option>Transport</option>
+            <option>Ko'chmas mulk</option><option>Xizmatlar</option>
+            <option>Sport</option><option>Boshqa</option>
+          </select>
+        </div>
+        <div class="field mt-12"><label>Sarlavha</label><input class="input" id="adTitle" type="text" placeholder="masalan: iPhone 14 Pro, 256GB"></div>
+        <div class="field mt-12"><label>Narx (so'm)</label><input class="input" id="adPrice" type="number" placeholder="0"></div>
+        <div class="field mt-12"><label>Tavsif</label><textarea class="input" id="adDesc" placeholder="Mahsulot haqida batafsil..."></textarea></div>
+        <button class="btn btn-primary btn-full mt-16" onclick="adStep(2)">Keyingi →</button>
+      </div>
+
+      <div id="adStep2" hidden>
+        <div class="field"><label>Rasm (ixtiyoriy)</label>
+          <div class="upload-zone" onclick="document.getElementById('imgInput').click()">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Rasm tanlash
+          </div>
+          <input type="file" id="imgInput" accept="image/*" hidden onchange="previewImg(event)">
+          <div id="imgPreview"></div>
+        </div>
+        <div class="field mt-12"><label>Holati</label>
+          <select class="input" id="adCond"><option>Yangi</option><option>Yaxshi holat</option><option>O'rtacha holat</option></select>
+        </div>
+        <div class="field mt-12"><label>Shahar / Tuman</label><input class="input" id="adCity" type="text" placeholder="masalan: Toshkent"></div>
+        <div class="flex-row mt-16">
+          <button class="btn btn-outline" onclick="adStep(1)">← Orqaga</button>
+          <button class="btn btn-primary" style="flex:1" onclick="adStep(3)">Keyingi →</button>
+        </div>
+      </div>
+
+      <div id="adStep3" hidden>
+        <div class="ad-preview-box" id="adPreviewBox"></div>
+        <div class="field"><label>Aloqa raqami</label><input class="input" id="adPhone" type="tel" placeholder="+998 90 000 00 00"></div>
+        <div class="flex-row mt-16">
+          <button class="btn btn-outline" onclick="adStep(2)">← Orqaga</button>
+          <button class="btn btn-primary" style="flex:1" onclick="submitAd()" id="submitAdBtn">Joylashtirish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="page-profile" class="page">
+    <div class="main" id="profileContent"><div class="spinner"></div></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="page-admin" class="page">
+    <div class="admin-hero">
+      <h2>Admin Panel</h2>
+      <p>Sello boshqaruv markazi</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-tile"><div class="stat-num" id="statAds">—</div><div class="stat-lbl">Jami e'lonlar</div></div>
+      <div class="stat-tile"><div class="stat-num" id="statUsers">—</div><div class="stat-lbl">Foydalanuvchilar</div></div>
+      <div class="stat-tile"><div class="stat-num" id="statShops">—</div><div class="stat-lbl">Do'konlar</div></div>
+      <div class="stat-tile"><div class="stat-num" id="statActive">—</div><div class="stat-lbl">Faol e'lonlar</div></div>
+    </div>
+    <div class="admin-tabs" id="adminTabs">
+      <button class="admin-tab active" data-tab="tabAds">E'lonlar</button>
+      <button class="admin-tab" data-tab="tabUsers">Foydalanuvchilar</button>
+      <button class="admin-tab" data-tab="tabShops">Do'konlar</button>
+      <button class="admin-tab" data-tab="tabPrices">Narxlar</button>
+    </div>
+    <div class="admin-content">
+      <div id="tabAds">
+        <div class="table-wrap"><table class="table">
+          <thead><tr><th>#</th><th>Sarlavha</th><th>Kategoriya</th><th>Narx</th><th>Holat</th><th>Amallar</th></tr></thead>
+          <tbody id="adminAdsBody"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
+        </table></div>
+      </div>
+      <div id="tabUsers" hidden>
+        <div class="table-wrap"><table class="table">
+          <thead><tr><th>#</th><th>Ism</th><th>Email</th><th>Admin</th><th>Amallar</th></tr></thead>
+          <tbody id="adminUsersBody"><tr><td colspan="5"><div class="spinner"></div></td></tr></tbody>
+        </table></div>
+      </div>
+      <div id="tabShops" hidden>
+        <div class="table-wrap"><table class="table">
+          <thead><tr><th>#</th><th>Do'kon</th><th>Tarif</th><th>Holat</th><th>Amallar</th></tr></thead>
+          <tbody id="adminShopsBody"></tbody>
+        </table></div>
+      </div>
+      <div id="tabPrices" hidden>
+        <div style="max-width:400px;">
+          <div style="font-size:11px;font-weight:700;color:var(--fg-3);letter-spacing:.8px;text-transform:uppercase;padding:0 0 12px;">Premium e'lon narxlari</div>
+          <div class="field"><label>TOP (1 kun)</label><input class="input" id="price1" type="number" value="5000"></div>
+          <div class="field mt-12"><label>Premium belgi (1 hafta)</label><input class="input" id="price2" type="number" value="25000"></div>
+          <div class="field mt-12"><label>Do'kon (1 oy)</label><input class="input" id="price3" type="number" value="50000"></div>
+          <div class="field mt-12"><label>Basic do'kon (oy)</label><input class="input" id="price4" type="number" value="29000"></div>
+          <div class="field mt-12"><label>Pro do'kon (oy)</label><input class="input" id="price5" type="number" value="79000"></div>
+          <button class="btn btn-primary mt-16" onclick="savePrices()">Saqlash</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="bnav-item active" data-page="home" onclick="switchPage('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Bosh
+    </button>
+    <button class="bnav-item" data-page="favorites" onclick="switchPage('favorites')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Saqlangan
+    </button>
+    <button class="bnav-item bnav-post" data-page="post" onclick="checkAuthForPost()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      E'lon
+    </button>
+    <button class="bnav-item" data-page="profile" onclick="switchPage('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profil
+    </button>
+  </nav>
+</div>
+
+<!-- MODALS -->
+
+<!-- AUTH -->
+<div class="overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Xush kelibsiz</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Kirish</button>
+      <button class="auth-tab" id="tabReg" onclick="switchAuthTab('reg')">Ro'yxat</button>
+    </div>
+
+    <div id="loginForm">
+      <div class="field"><label>Email</label><input class="input" id="loginEmail" type="email" placeholder="email@gmail.com"></div>
+      <div class="field mt-12"><label>Parol</label><input class="input" id="loginPass" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-full mt-16" onclick="doLogin()">Kirish</button>
+    </div>
+
+    <div id="regForm" hidden>
+      <div class="field"><label>Ism Familiya</label><input class="input" id="regName" type="text" placeholder="To'liq ismingiz"></div>
+      <div class="field mt-12"><label>Email</label><input class="input" id="regEmail" type="email" placeholder="email@gmail.com"></div>
+      <div class="field mt-12"><label>Parol</label><input class="input" id="regPass" type="password" placeholder="Kamida 6 belgi"></div>
+      <button class="btn btn-primary btn-full mt-16" onclick="doRegister()">Ro'yxatdan o'tish</button>
+    </div>
+  </div>
+</div>
+
+<!-- AD DETAIL -->
+<div class="overlay" id="adDetailModal">
+  <div class="modal"><div class="modal-handle"></div><div id="adDetailContent"></div></div>
+</div>
+
+<!-- NOTIFICATIONS -->
+<div class="overlay" id="notifModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Bildirishnomalar</div>
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <h3>Bildirishnoma yo'q</h3><p>Yangi bildirishnomalar bu yerda ko'rinadi</p>
+    </div>
+    <button class="btn btn-outline btn-full" onclick="closeModal('notifModal')">Yopish</button>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div class="overlay" id="shopModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Do'kon ochish</div>
+    <div class="field"><label>Do'kon nomi</label><input class="input" id="shopName" type="text" placeholder="masalan: Texno Bozor"></div>
+    <div class="field mt-12"><label>Kategoriya</label>
+      <select class="input" id="shopCat"><option>Elektronika</option><option>Kiyim</option><option>Oziq-ovqat</option><option>Xizmatlar</option><option>Boshqa</option></select>
+    </div>
+    <div class="field mt-12"><label>Tavsif</label><textarea class="input" id="shopDesc" placeholder="Do'kon haqida qisqacha..."></textarea></div>
+    <div class="field mt-12"><label>Tarif</label>
+      <select class="input" id="shopTier"><option value="basic">Basic — 29,000 so'm/oy</option><option value="pro">Pro — 79,000 so'm/oy</option></select>
+    </div>
+    <button class="btn btn-primary btn-full mt-16" onclick="createShop()">Do'kon ochish</button>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Sozlamalar</div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--fg-3);letter-spacing:.8px;text-transform:uppercase;padding:4px 0 12px;">Ko'rinish</div>
+    <div class="toggle-row">
+      <div class="toggle-label"><span>Mavzu</span><small>Tungi / kunduzgi rejim</small></div>
+      <div class="seg-ctrl">
+        <button class="seg-btn active" id="themeLight" onclick="setTheme('light')">Kunduz</button>
+        <button class="seg-btn" id="themeAuto" onclick="setTheme('auto')">Auto</button>
+        <button class="seg-btn" id="themeDark" onclick="setTheme('dark')">Tungi</button>
+      </div>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--fg-3);letter-spacing:.8px;text-transform:uppercase;padding:16px 0 12px;">Til / Yozuv</div>
+    <div class="lang-opt" onclick="setLang('uz')"><span style="font-size:20px">🇺🇿</span><span class="lang-name">O'zbek (lotin)</span><span class="check" id="langUz">✓</span></div>
+    <div class="lang-opt" onclick="setLang('cyr')"><span style="font-size:20px">🇺🇿</span><span class="lang-name">Ўзбек (кирилл)</span><span class="check" id="langCyr" hidden>✓</span></div>
+    <div class="lang-opt" onclick="setLang('ru')"><span style="font-size:20px">🇷🇺</span><span class="lang-name">Русский</span><span class="check" id="langRu" hidden>✓</span></div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--fg-3);letter-spacing:.8px;text-transform:uppercase;padding:16px 0 12px;">Bildirishnomalar</div>
+    <div class="toggle-row"><div class="toggle-label"><span>Yangi xabarlar</span></div><button class="toggle on" id="togNotif" onclick="this.classList.toggle('on')"></button></div>
+    <div class="toggle-row"><div class="toggle-label"><span>E'lon tasdiqlandi</span></div><button class="toggle on" id="togAdOk" onclick="this.classList.toggle('on')"></button></div>
+    <div class="toggle-row"><div class="toggle-label"><span>Promo takliflar</span></div><button class="toggle" id="togPromo" onclick="this.classList.toggle('on')"></button></div>
+
+    <button class="btn btn-outline btn-full mt-16" onclick="closeModal('settingsModal')">Yopish</button>
+  </div>
+</div>
+
+<!-- SUPPORT -->
+<div class="overlay" id="supportModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Qo'llab-quvvatlash</div>
+    <div class="chat-wrap">
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="chat-msg them"><div class="chat-bubble">Salom! Sello qo'llab-quvvatlash xizmatiga xush kelibsiz. Qanday yordam bera olaman?</div><div class="chat-time">Hozir</div></div>
+      </div>
+      <div class="chat-input-row">
+        <input class="input" id="chatInput" type="text" placeholder="Xabar yozing..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn btn-primary" style="padding:11px 14px;" onclick="sendChat()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="overlay" id="aboutModal">
+  <div class="modal" style="text-align:center;padding-block:36px 32px;">
+    <div class="modal-handle"></div>
+    <div class="about-logo">Sello</div>
+    <div style="font-size:13px;color:var(--fg-3);margin:6px 0 20px;">Versiya 1.0.0</div>
+    <div style="font-size:15px;color:var(--fg-2);line-height:1.65;">O'zbekistondagi mahalliy bozor platformasi. Tez, oson va qulay e'lon berish va xarid qilish.</div>
+    <div style="margin-top:20px;font-size:12px;color:var(--fg-3);">© 2024 Sello. Barcha huquqlar himoyalangan.</div>
+    <button class="btn btn-outline mt-16" onclick="closeModal('aboutModal')">Yopish</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================================================================
+   SELLO — Supabase + Google OAuth
+   ================================================================ */
+
+const SUPABASE_URL = 'https://fbrozejtidtohgmeroep.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_zvrCjGf_9CCQIMkHjNv5kg_4sSzH95C';
+const ADMIN_EMAIL  = 'mominjonov404@gmail.com';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ---- STATE ---- */
+let ST = {
+  user:    null,
+  profile: null,
+  ads:     [],
+  activeCat: 'all',
+  favs:    [],
+  theme:   'auto',
+  lang:    'uz'
+};
+
+function loadLocal() {
+  try {
+    const d = JSON.parse(localStorage.getItem('sello_local') || '{}');
+    if (d.favs)  ST.favs  = d.favs;
+    if (d.theme) { ST.theme = d.theme; applyTheme(d.theme, false); }
+    if (d.lang)  ST.lang  = d.lang;
+  } catch(e) {}
+}
+
+function saveLocal() {
+  try { localStorage.setItem('sello_local', JSON.stringify({ favs: ST.favs, theme: ST.theme, lang: ST.lang })); } catch(e) {}
+}
+
+/* ---- THEME ---- */
+function applyTheme(t, save = true) {
+  ST.theme = t;
+  if      (t === 'dark')  document.documentElement.setAttribute('data-theme','dark');
+  else if (t === 'light') document.documentElement.setAttribute('data-theme','light');
+  else                    document.documentElement.removeAttribute('data-theme');
+  ['themeLight','themeAuto','themeDark'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+  ({ light:'themeLight', auto:'themeAuto', dark:'themeDark' })[t] && document.getElementById(({ light:'themeLight', auto:'themeAuto', dark:'themeDark' })[t])?.classList.add('active');
+  if (save) saveLocal();
+}
+function setTheme(t) { applyTheme(t); }
+
+/* ---- LANG ---- */
+function setLang(l) {
+  ST.lang = l;
+  ['langUz','langCyr','langRu'].forEach(id => { const el = document.getElementById(id); if(el) el.hidden = true; });
+  const map = { uz:'langUz', cyr:'langCyr', ru:'langRu' };
+  const el = document.getElementById(map[l]); if(el) el.hidden = false;
+  saveLocal(); showToast('Til o\'zgartirildi');
+}
+
+/* ---- CATEGORIES ---- */
+const CATS = ['Barchasi','Elektronika','Kiyim-kechak','Uy jihozlari','Transport','Ko\'chmas mulk','Xizmatlar','Sport','Boshqa'];
+const CAT_ICONS = { 'Elektronika':'💻','Kiyim-kechak':'👕','Uy jihozlari':'🛋️','Transport':'🚗','Ko\'chmas mulk':'🏠','Xizmatlar':'🔧','Sport':'⚽','Boshqa':'📦' };
+
+function renderCategories() {
+  document.getElementById('catsBar').innerHTML = CATS.map(c =>
+    `<button class="cat-chip${c==='Barchasi'?' active':''}" onclick="filterCat('${c}')">${c}</button>`
+  ).join('');
+}
+
+function filterCat(cat) {
+  ST.activeCat = cat === 'Barchasi' ? 'all' : cat;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.toggle('active', c.textContent === cat));
+  renderAds();
+}
+
+/* ---- ADS — Supabase ---- */
+async function loadAds() {
+  const { data, error } = await sb.from('ads').select('*').eq('is_active', true).order('is_premium', { ascending: false }).order('created_at', { ascending: false }).limit(80);
+  if (!error && data) ST.ads = data;
+  renderAds();
+}
+
+function renderAds() {
+  const grid   = document.getElementById('adsGrid');
+  const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  let ads = ST.ads.filter(a => {
+    if (ST.activeCat !== 'all' && a.category !== ST.activeCat) return false;
+    if (search && !a.title.toLowerCase().includes(search) && !a.category.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  if (!ads.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1"><div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <h3>E'lon topilmadi</h3><p>Boshqa kalit so'z bilan qidiring</p></div></div>`;
+    return;
+  }
+
+  grid.innerHTML = ads.map(a => `
+    <div class="ad-card" onclick="showAdDetail(${a.id})">
+      <div class="ad-img">
+        <span style="position:relative;z-index:1">${CAT_ICONS[a.category]||'📦'}</span>
+        ${a.is_premium ? '<span class="ad-badge">TOP</span>' : ''}
+      </div>
+      <div class="ad-body">
+        <div class="ad-title">${esc(a.title)}</div>
+        <div class="ad-price">${fmtPrice(a.price)}</div>
+        <div class="ad-meta"><span>${a.city||''}</span>${a.condition?`<span>·</span><span>${a.condition}</span>`:''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterAds() { renderAds(); }
+
+/* ---- AD DETAIL ---- */
+async function showAdDetail(id) {
+  const a = ST.ads.find(x => x.id === id);
+  if (!a) return;
+  const isFav = ST.favs.includes(id);
+
+  document.getElementById('adDetailContent').innerHTML = `
+    <div class="ad-detail-img">${CAT_ICONS[a.category]||'📦'}</div>
+    <div class="ad-detail-price">${fmtPrice(a.price)}</div>
+    <div class="ad-detail-title">${esc(a.title)}</div>
+    <div class="ad-info-chips">
+      ${a.city ? `<div class="info-chip">📍 ${esc(a.city)}</div>` : ''}
+      <div class="info-chip">${esc(a.category)}</div>
+      ${a.condition ? `<div class="info-chip">${esc(a.condition)}</div>` : ''}
+    </div>
+    <div class="ad-desc">${esc(a.description||'')}</div>
+    <div class="seller-card">
+      <div class="seller-av">S</div>
+      <div>
+        <div class="seller-name">Sotuvchi</div>
+        <div class="seller-meta">${esc(a.phone||'')}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-primary" style="flex:1" onclick="copyPhone('${esc(a.phone||'')}')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.37 2 2 0 0 1 3.6 1.17h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.5a16 16 0 0 0 5.59 5.59l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
+        Raqamni ko'chirish
+      </button>
+      <button class="btn btn-outline" style="padding:12px 14px;" onclick="toggleFav(${id})" id="favBtn${id}">${isFav?'❤️':'🤍'}</button>
+    </div>
+  `;
+  openModal('adDetailModal');
+}
+
+function copyPhone(phone) {
+  if (navigator.clipboard) navigator.clipboard.writeText(phone).catch(()=>{});
+  showToast('Raqam ko\'chirildi: ' + phone);
+}
+
+function toggleFav(id) {
+  const idx = ST.favs.indexOf(id);
+  if (idx === -1) ST.favs.push(id); else ST.favs.splice(idx, 1);
+  saveLocal();
+  const btn = document.getElementById('favBtn' + id);
+  if (btn) btn.textContent = ST.favs.includes(id) ? '❤️' : '🤍';
+  showToast(ST.favs.includes(id) ? 'Saqlandi!' : 'Olib tashlandi');
+}
+
+/* ---- FAVORITES ---- */
+function renderFavs() {
+  const el   = document.getElementById('favsList');
+  const favs = ST.ads.filter(a => ST.favs.includes(a.id));
+  if (!favs.length) {
+    el.innerHTML = `<div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <h3>Hali saqlangan e'lon yo'q</h3><p>E'lonni saqlash uchun ❤️ ni bosing</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = favs.map(a => `
+    <div class="my-ad-row" onclick="showAdDetail(${a.id})">
+      <div class="my-ad-thumb">${CAT_ICONS[a.category]||'📦'}</div>
+      <div class="my-ad-info">
+        <div class="my-ad-title">${esc(a.title)}</div>
+        <div class="my-ad-price">${fmtPrice(a.price)}</div>
+        <div class="text-sm">${a.city||''} · ${a.category}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ---- POST AD ---- */
+let curStep = 1;
+
+function adStep(n) {
+  if (n === 2) {
+    if (!document.getElementById('adCat').value)   { showToast('Kategoriyani tanlang'); return; }
+    if (!document.getElementById('adTitle').value.trim()) { showToast('Sarlavha kiriting'); return; }
+  }
+  if (n === 3) {
+    if (!document.getElementById('adCity').value.trim()) { showToast('Manzilni kiriting'); return; }
+    const p = document.getElementById('adPreviewBox');
+    p.innerHTML = `
+      <div style="font-weight:800;font-size:16px;margin-bottom:4px;letter-spacing:-.3px">${esc(document.getElementById('adTitle').value)}</div>
+      <div style="font-size:20px;font-weight:800;color:var(--accent);margin-bottom:8px;font-variant-numeric:tabular-nums">${fmtPrice(+document.getElementById('adPrice').value||0)}</div>
+      <div style="font-size:13px;color:var(--fg-2)">${document.getElementById('adCat').value} · ${document.getElementById('adCity').value} · ${document.getElementById('adCond').value}</div>
+    `;
+  }
+  curStep = n;
+  ['adStep1','adStep2','adStep3'].forEach((id,i) => {
+    document.getElementById(id).hidden = (i+1) !== n;
+    document.getElementById('s'+(i+1)).classList.toggle('done', i+1 <= n);
+  });
+}
+
+function previewImg(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => { document.getElementById('imgPreview').innerHTML = `<img src="${ev.target.result}" style="width:100%;border-radius:10px;margin-top:10px;max-height:160px;object-fit:cover;">`; };
+  r.readAsDataURL(f);
+}
+
+async function submitAd() {
+  const phone = document.getElementById('adPhone').value.trim();
+  if (!phone) { showToast('Telefon raqam kiriting'); return; }
+  if (!ST.user) { openModal('authModal'); return; }
+
+  const btn = document.getElementById('submitAdBtn');
+  btn.disabled = true; btn.textContent = 'Yuklanmoqda...';
+
+  const { error } = await sb.from('ads').insert({
+    user_id:     ST.user.id,
+    title:       document.getElementById('adTitle').value.trim(),
+    category:    document.getElementById('adCat').value,
+    price:       +document.getElementById('adPrice').value || 0,
+    description: document.getElementById('adDesc').value.trim(),
+    condition:   document.getElementById('adCond').value,
+    city:        document.getElementById('adCity').value.trim(),
+    phone
+  });
+
+  btn.disabled = false; btn.textContent = 'Joylashtirish';
+
+  if (error) { showToast('Xato: ' + error.message); return; }
+
+  showToast('E\'lon joylashtirildi!');
+  await loadAds();
+  switchPage('home');
+  ['adCat','adTitle','adPrice','adDesc','adCity','adPhone'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('imgPreview').innerHTML='';
+  adStep(1);
+}
+
+function checkAuthForPost() {
+  if (!ST.user) { openModal('authModal'); return; }
+  switchPage('post');
+}
+
+/* ---- AUTH — Supabase ---- */
+function switchAuthTab(t) {
+  document.getElementById('loginForm').hidden = t !== 'login';
+  document.getElementById('regForm').hidden   = t !== 'reg';
+  document.getElementById('tabLogin').classList.toggle('active', t === 'login');
+  document.getElementById('tabReg').classList.toggle('active', t === 'reg');
+}
+
+async function loginGoogle() {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) showToast('Google login xato: ' + error.message);
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) { showToast('Ma\'lumotlarni to\'ldiring'); return; }
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { showToast('Xato: ' + error.message); return; }
+  closeModal('authModal');
+}
+
+async function doRegister() {
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  if (!name || !email || !pass) { showToast('Barcha maydonlarni to\'ldiring'); return; }
+  if (pass.length < 6) { showToast('Parol kamida 6 belgi'); return; }
+
+  const { data, error } = await sb.auth.signUp({
+    email, password: pass,
+    options: { data: { full_name: name } }
+  });
+  if (error) { showToast('Xato: ' + error.message); return; }
+  showToast('Tasdiqlash emaili yuborildi!');
+  closeModal('authModal');
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  ST.user = null; ST.profile = null;
+  updateNavAvatar(); renderProfile(); switchPage('home');
+  showToast('Chiqildi');
+}
+
+/* ---- PROFILE ---- */
+async function loadProfile() {
+  if (!ST.user) return;
+  const { data } = await sb.from('profiles').select('*').eq('id', ST.user.id).single();
+  if (data) ST.profile = data;
+  renderProfile();
+  updateNavAvatar();
+}
+
+function renderProfile() {
+  const el = document.getElementById('profileContent');
+  if (!el) return;
+
+  if (!ST.user) {
+    el.innerHTML = `
+      <div class="profile-hero" style="padding-top:60px;">
+        <div class="about-logo" style="font-size:34px;margin-bottom:8px;">Sello</div>
+        <div style="font-size:15px;color:var(--fg-2);margin-bottom:28px;">Hisobingizga kiring</div>
+        <button class="btn btn-primary btn-full" onclick="openModal('authModal')">Kirish yoki ro'yxatdan o'tish</button>
+        <button class="btn btn-outline btn-full mt-12" onclick="openModal('settingsModal')">Sozlamalar</button>
+      </div>
+    `;
+    return;
+  }
+
+  const p        = ST.profile || {};
+  const isAdmin  = p.is_admin || ST.user.email === ADMIN_EMAIL;
+  const myAds    = ST.ads.filter(a => a.user_id === ST.user.id);
+  const initials = (p.name || ST.user.email || 'U').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+
+  el.innerHTML = `
+    <div class="profile-hero">
+      <div class="profile-avatar" onclick="changeAvatar()">
+        ${p.avatar_url ? `<img src="${p.avatar_url}">` : initials}
+      </div>
+      <div class="profile-name">${esc(p.name || ST.user.email || '')}</div>
+      <div class="profile-email">${esc(ST.user.email || '')}</div>
+    </div>
+
+    <div class="menu-section-label">Mening hisobim</div>
+    <div class="menu-card">
+      <button class="menu-item" onclick="showMyAds()">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6m-6 4h6m-6 4h4"/></svg></div>
+        <span class="menu-label">Mening e'lonlarim</span>
+        <span class="menu-badge">${myAds.length}</span>
+        <span class="menu-arrow">›</span>
+      </button>
+      <button class="menu-item" onclick="openModal('shopModal')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <span class="menu-label">Do'kon ochish</span>
+        <span class="menu-arrow">›</span>
+      </button>
+    </div>
+
+    <div class="menu-section-label">Ilova</div>
+    <div class="menu-card">
+      <button class="menu-item" onclick="openModal('settingsModal')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        <span class="menu-label">Sozlamalar</span>
+        <span class="menu-arrow">›</span>
+      </button>
+      <button class="menu-item" onclick="openModal('supportModal')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="menu-label">Qo'llab-quvvatlash</span>
+        <span class="menu-arrow">›</span>
+      </button>
+      <button class="menu-item" onclick="openModal('aboutModal')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <span class="menu-label">Platforma haqida</span>
+        <span class="menu-arrow">›</span>
+      </button>
+    </div>
+
+    ${isAdmin ? `
+    <div class="menu-section-label">Boshqaruv</div>
+    <div class="menu-card">
+      <button class="menu-item" onclick="switchPage('admin')">
+        <div class="menu-icon" style="background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+        <span class="menu-label" style="font-weight:700;color:var(--accent)">Admin Panel</span>
+        <span class="menu-badge" style="background:var(--accent);color:#fff">ADMIN</span>
+        <span class="menu-arrow">›</span>
+      </button>
+    </div>` : ''}
+
+    <div class="menu-section-label"> </div>
+    <div class="menu-card">
+      <button class="menu-item color-danger" onclick="logout()">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+        <span class="menu-label">Chiqish</span>
+      </button>
+    </div>
+  `;
+}
+
+function goProfile() { switchPage('profile'); }
+
+function changeAvatar() {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = async e => {
+    const f = e.target.files[0]; if (!f || !ST.user) return;
+    const ext  = f.name.split('.').pop();
+    const path = `avatars/${ST.user.id}.${ext}`;
+    const { error: upErr } = await sb.storage.from('avatars').upload(path, f, { upsert: true });
+    if (upErr) { showToast('Rasm yuklanmadi'); return; }
+    const { data: urlData } = sb.storage.from('avatars').getPublicUrl(path);
+    const url = urlData?.publicUrl;
+    await sb.from('profiles').update({ avatar_url: url }).eq('id', ST.user.id);
+    if (ST.profile) ST.profile.avatar_url = url;
+    renderProfile(); updateNavAvatar();
+  };
+  inp.click();
+}
+
+function updateNavAvatar() {
+  const av = document.getElementById('navAvatar');
+  if (!av) return;
+  if (ST.user) {
+    const p = ST.profile;
+    if (p?.avatar_url) {
+      av.innerHTML = `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+      av.innerHTML = '';
+      av.textContent = (p?.name || ST.user.email || 'U')[0].toUpperCase();
+    }
+  } else {
+    av.innerHTML = '';
+    av.textContent = '?';
+  }
+}
+
+function showMyAds() {
+  const el    = document.getElementById('profileContent');
+  const myAds = ST.ads.filter(a => a.user_id === ST.user?.id);
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <button class="btn btn-outline" style="padding:8px 14px;" onclick="renderProfile()">‹ Orqaga</button>
+      <span style="font-size:16px;font-weight:700;">Mening e'lonlarim</span>
+    </div>
+    ${!myAds.length ? `<div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      <h3>Hali e'lon yo'q</h3><p>Birinchi e'loningizni joylashtiring</p>
+      <button class="btn btn-primary" onclick="checkAuthForPost()">E'lon berish</button>
+    </div>` : myAds.map(a => `
+      <div class="my-ad-row" onclick="showAdDetail(${a.id})">
+        <div class="my-ad-thumb">${CAT_ICONS[a.category]||'📦'}</div>
+        <div class="my-ad-info">
+          <div class="my-ad-title">${esc(a.title)}</div>
+          <div class="my-ad-price">${fmtPrice(a.price)}</div>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <button class="tbl-btn del" onclick="event.stopPropagation();deleteMyAd(${a.id})">O'chirish</button>
+          </div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+async function deleteMyAd(id) {
+  const { error } = await sb.from('ads').delete().eq('id', id);
+  if (error) { showToast('Xato: ' + error.message); return; }
+  ST.ads = ST.ads.filter(a => a.id !== id);
+  showMyAds(); renderAds(); showToast('E\'lon o\'chirildi');
+}
+
+/* ---- SHOP ---- */
+async function createShop() {
+  if (!ST.user) { openModal('authModal'); return; }
+  const name = document.getElementById('shopName').value.trim();
+  if (!name) { showToast('Do\'kon nomini kiriting'); return; }
+  const { error } = await sb.from('shops').insert({
+    owner_id: ST.user.id,
+    name, category: document.getElementById('shopCat').value,
+    description: document.getElementById('shopDesc').value.trim(),
+    tier: document.getElementById('shopTier').value
+  });
+  if (error) { showToast('Xato: ' + error.message); return; }
+  closeModal('shopModal');
+  showToast('Do\'kon so\'rovi yuborildi!');
+}
+
+/* ---- ADMIN ---- */
+async function renderAdmin() {
+  const [adsRes, usersRes, shopsRes] = await Promise.all([
+    sb.from('ads').select('*', { count: 'exact' }),
+    sb.from('profiles').select('*', { count: 'exact' }),
+    sb.from('shops').select('*', { count: 'exact' })
+  ]);
+
+  document.getElementById('statAds').textContent   = adsRes.count ?? 0;
+  document.getElementById('statUsers').textContent = usersRes.count ?? 0;
+  document.getElementById('statShops').textContent = shopsRes.count ?? 0;
+  document.getElementById('statActive').textContent = (adsRes.data||[]).filter(a=>a.is_active).length;
+
+  // Ads table
+  const ads = adsRes.data || [];
+  document.getElementById('adminAdsBody').innerHTML = ads.slice(0,30).map((a,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(a.title)}</td>
+      <td>${esc(a.category)}</td>
+      <td style="font-variant-numeric:tabular-nums;">${fmtPrice(a.price)}</td>
+      <td><span class="badge ${a.is_active?'badge-green':'badge-warn'}">${a.is_active?'Faol':'Nofaol'}</span></td>
+      <td>
+        <button class="tbl-btn" onclick="togglePremiumAdmin(${a.id},${a.is_premium})">${a.is_premium?'TOP ✓':'TOP'}</button>
+        <button class="tbl-btn del" onclick="adminDeleteAd(${a.id})">O'ch</button>
+      </td>
+    </tr>
+  `).join('');
+
+  // Users table
+  const users = usersRes.data || [];
+  document.getElementById('adminUsersBody').innerHTML = users.slice(0,30).map((u,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${esc(u.name||'—')}</td>
+      <td style="font-size:12px;">${esc(u.id.slice(0,8)+'...')}</td>
+      <td>${u.is_admin ? '<span class="badge badge-green">Admin</span>' : '—'}</td>
+      <td><button class="tbl-btn" onclick="toggleAdmin('${u.id}',${u.is_admin})">${u.is_admin?'Admin olish':'Admin qilish'}</button></td>
+    </tr>
+  `).join('');
+
+  // Shops table
+  const shops = shopsRes.data || [];
+  document.getElementById('adminShopsBody').innerHTML = !shops.length
+    ? '<tr><td colspan="5" style="text-align:center;color:var(--fg-3);padding:24px">Do\'kon yo\'q</td></tr>'
+    : shops.map((s,i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td>${esc(s.name)}</td>
+        <td>${s.tier||'basic'}</td>
+        <td><span class="badge ${s.status==='active'?'badge-green':'badge-warn'}">${s.status==='active'?'Faol':'Kutilmoqda'}</span></td>
+        <td>
+          <button class="tbl-btn" onclick="approveShop(${s.id})">Tasdiqlash</button>
+          <button class="tbl-btn del" onclick="deleteShop(${s.id})">O'ch</button>
+        </td>
+      </tr>
+    `).join('');
+}
+
+async function togglePremiumAdmin(id, cur) {
+  await sb.from('ads').update({ is_premium: !cur }).eq('id', id);
+  await loadAds(); renderAdmin(); showToast(!cur ? 'TOP qilindi' : 'TOP bekor');
+}
+async function adminDeleteAd(id) {
+  await sb.from('ads').delete().eq('id', id);
+  await loadAds(); renderAdmin(); showToast('E\'lon o\'chirildi');
+}
+async function toggleAdmin(uid, cur) {
+  await sb.from('profiles').update({ is_admin: !cur }).eq('id', uid);
+  renderAdmin(); showToast(!cur ? 'Admin qilindi' : 'Admin huquqi olindi');
+}
+async function approveShop(id) {
+  await sb.from('shops').update({ status: 'active' }).eq('id', id);
+  renderAdmin(); showToast('Do\'kon tasdiqlandi');
+}
+async function deleteShop(id) {
+  await sb.from('shops').delete().eq('id', id);
+  renderAdmin(); showToast('Do\'kon o\'chirildi');
+}
+function savePrices() { showToast('Narxlar saqlandi!'); }
+
+/* ---- ADMIN TABS ---- */
+function initAdminTabs() {
+  document.querySelectorAll('.admin-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.admin-tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      ['tabAds','tabUsers','tabShops','tabPrices'].forEach(id => document.getElementById(id).hidden = true);
+      document.getElementById(t.dataset.tab).hidden = false;
+    });
+  });
+}
+
+/* ---- CHAT ---- */
+const AUTO_REPLIES = [
+  'Sizga yordam berishdan xursandman! Qanday muammo bor?',
+  'Tushundim. Bu masalani tekshirib ko\'ramiz.',
+  '1-2 soat ichida hal qilinadi.',
+  'Boshqa savollar bo\'lsa, bemalol yozing!'
+];
+let replyIdx = 0;
+function sendChat() {
+  const inp = document.getElementById('chatInput');
+  const msgs = document.getElementById('chatMsgs');
+  const text = inp.value.trim(); if (!text) return;
+  msgs.innerHTML += `<div class="chat-msg me"><div class="chat-bubble">${esc(text)}</div><div class="chat-time">Hozir</div></div>`;
+  inp.value = ''; msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    msgs.innerHTML += `<div class="chat-msg them"><div class="chat-bubble">${AUTO_REPLIES[replyIdx++%AUTO_REPLIES.length]}</div><div class="chat-time">Hozir</div></div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 900);
+}
+
+/* ---- NAV ---- */
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + name);
+  if (pg) { pg.classList.add('active'); }
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.toggle('active', b.dataset.page === name));
+  if (name === 'favorites') renderFavs();
+  if (name === 'profile')   renderProfile();
+  if (name === 'admin') {
+    const isAdmin = ST.profile?.is_admin || ST.user?.email === ADMIN_EMAIL;
+    if (!isAdmin) { switchPage('home'); return; }
+    renderAdmin();
+  }
+}
+
+/* ---- MODALS ---- */
+function openModal(id)  { const el = document.getElementById(id); if(el){ el.classList.add('open'); document.body.style.overflow='hidden'; } }
+function closeModal(id) { const el = document.getElementById(id); if(el){ el.classList.remove('open'); document.body.style.overflow=''; } }
+
+/* ---- TOAST ---- */
+let toastT;
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ---- HELPERS ---- */
+function fmtPrice(p) {
+  if (!p) return 'Muzokarali';
+  return new Intl.NumberFormat('uz-UZ').format(p) + ' so\'m';
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ---- BOOT ---- */
+async function init() {
+  loadLocal();
+  renderCategories();
+  initAdminTabs();
+
+  // overlay backdrop close
+  document.querySelectorAll('.overlay').forEach(o => {
+    o.addEventListener('click', e => { if(e.target===o) closeModal(o.id); });
+  });
+
+  // Supabase auth session
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    ST.user = session.user;
+    await loadProfile();
+  }
+  updateNavAvatar();
+
+  // Auth state listener
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (session?.user) {
+      ST.user = session.user;
+      await loadProfile();
+      closeModal('authModal');
+      if (event === 'SIGNED_IN') showToast('Xush kelibsiz!');
+    } else {
+      ST.user = null; ST.profile = null;
+      updateNavAvatar(); renderProfile();
+    }
+  });
+
+  await loadAds();
+}
+
+init();
+</script>
